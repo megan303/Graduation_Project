@@ -10,8 +10,9 @@ import webbrowser
 import numpy as np
 import os, cv2
 import math
+import nums_from_string as nfs
 import mediapipe as mp
-from cut_img import cut_img
+from func import cut_img, find_coor
 from PIL import Image
 
 #創建Flask物件app并初始化
@@ -29,6 +30,19 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
+color_green = (0, 255, 0)
+color_red = (0, 0, 255)
+color_blue = (255, 0, 0)
+
+mpHands = mp.solutions.hands
+hands = mpHands.Hands(min_detection_confidence=0.5, min_tracking_confidence=0.5, max_num_hands = 1)
+
+global frame, camera, camera_mode, capture, det
+camera_mode = False
+frame = None
+capture = 0
+det = 0
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -42,11 +56,11 @@ class UserReister(db.Model, UserMixin): # 記錄使用者資料的資料表
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
-    user_img_path = db.Column(db.String(100), nullable=False)
-    def __init__(self, username, password, user_img_path):
+    user_point = db.Column(db.String(100), nullable=False)
+    def __init__(self, username, password, user_point):
         self.username = username
         self.password = password
-        self.user_img_path = user_img_path
+        self.user_point = user_point
 
 class RegisterForm(FlaskForm):
     username = StringField(validators=[
@@ -90,13 +104,13 @@ def register():
         username=form.username.data
         hashed_password = bcrypt.generate_password_hash(form.password.data)
         password=hashed_password
-        user_img_path = "NONE"
+        user_point = "NONE"
         user_data = UserReister.query.filter_by(username=username).first()
         if user_data:
             flash('此名稱已有使用者註冊，請輸入新的名稱')
             return redirect(url_for('register'))
         else:
-            new_user = UserReister(username, password, user_img_path)
+            new_user = UserReister(username, password, user_point)
             db.session.add(new_user)
             db.session.commit()
             flash('註冊成功!!')
@@ -132,7 +146,68 @@ def logout():
 def select_func():
     user = load_user(current_user.id)
     return render_template('select_func.html', welcome_text = "歡迎 " + user.username + "!!")
+#######################################################################################
+def frames(user):
+    global camera_mode, capture, det
+    camera_mode = True
+    coor = []
+    radius = []
+    if (det):
+        points = user.user_point
+        number_list = nfs.get_nums(points)
+        for i in range(0, len(number_list), 3):
+            coor.append([number_list[i], number_list[i + 1]])
+            radius.append(number_list[i + 2])
+    if camera_mode == True:
+        camera = cv2.VideoCapture(2)
+        while True:
+            success, frame = camera.read()
+            if success:
+                if(capture):
+                    capture = 0
+                    filename = user.username + '.jpg'
+                    file_path = os.path.join(UPLOAD_FOLDER, filename)
+                    cv2.imwrite(file_path, frame)
+                    camera.release()
+                if(det):
+                    H = frame.shape[0]
+                    W = frame.shape[1]
+                    wrist_x = 0  # 腕關節
+                    wrist_y = 0
+                    img_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    result = hands.process(img_gray)  # 偵測手
+    
+                    if result.multi_hand_landmarks:
+                        for handLms in result.multi_hand_landmarks:
+                            for i, lm in enumerate(handLms.landmark):
+                                xPos = round(lm.x * W)
+                                yPos = round(lm.y * H)
+                                if i == 0:  # wrist point
+                                    wrist_x = xPos
+                                    wrist_y = yPos
+                        wrist_y = wrist_y + 15
+                        for i in range(0, len(coor)):
+                            #print("dis:", coor[i])
+                            #print("radius:", radius[i])
+                            frame = cv2.circle(frame, (wrist_x - coor[i][0], wrist_y + coor[i][1]), radius[i], color_red, 1)
+                            frame = cv2.circle(frame, (wrist_x - coor[i][0], wrist_y + coor[i][1]), 2, color_blue, 1)
+                try:
+                    ret, buffer = cv2.imencode('.jpg', cv2.flip(frame, 1))
+                    frame = buffer.tobytes()
+                    yield (b'--frame\r\n'
+                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+                except Exception as e:
+                    pass
+            else:
+                pass
 
+def release_camera():
+    try:
+        camera.release()
+        cv2.destroyAllWindows()
+    except:
+        pass
+########################################################################################
 @app.route('/select_file',methods=['POST','GET'])
 @login_required
 def select_file():
@@ -151,11 +226,13 @@ def select_file():
         filename = user.username + '.jpg'
         file_path = os.path.join(UPLOAD_FOLDER, filename)
         filee = request.files['img'].read()
-        npimg = np.fromstring(filee, np.uint8)
+        npimg = np.frombuffer(filee, np.uint8)
         img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
-        img = cut_img(img)
-        cv2.imwrite(file_path, img)
-        user.user_img_path = file_path
+        coor, radius = find_coor(img, file_path)
+        points = ""
+        for i in range(0, len(coor)):
+            points = str(coor[i][0]) + "," + str(coor[i][1]) + "," + str(radius[i]) + "|"
+        user.user_point = points
         db.session.commit()
         return redirect(url_for('show_result'))
     return render_template('select_file.html')
@@ -163,22 +240,41 @@ def select_file():
 @app.route('/show_result', methods=['GET'])
 @login_required
 def show_result():
+    global camera, camera_mode
+    camera_mode = False
     user = load_user(current_user.id)
     path = "/static/uploads/" + user.username + ".jpg"
-    print("path: ", path)
     return render_template("show_result.html", user_image=path)
+    
+@app.route('/video_feed')
+@login_required
+def video_feed():
+    user = load_user(current_user.id)
+    return Response(frames(user), mimetype = 'multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/take_photo',methods=['POST','GET'])
 @login_required
 def take_photo():
+    global camera_mode, camera
+    camera_mode = True
+    if request.method == 'POST':
+        if request.form.get('click') == 'Capture':
+            global capture
+            capture = 1
+            return redirect(url_for('show_result'))
     return render_template('take_photo.html')
 
-@app.route('/detect')
+@app.route('/detect', methods=['POST','GET'])
 @login_required
 def detect():
+    if request.method == 'POST':
+        user = load_user(current_user.id)
+        global camera_mode, camera
+        camera_mode = True
+        if request.form.get('det') == 'Detect':
+            global det
+            det = not det
     return render_template('detect.html')
 
 if __name__ == '__main__':
-    if not os.path.exists('database.sqlite'):
-        db.create_all()
     app.run(host="localhost", port=3000, debug=True)

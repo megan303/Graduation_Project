@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+
+<body>
+    <div style = "text-align:center;">
+    <h1>使用者登入</h1><br>
+        {{ login_status }}<br>
+        {% with messages = get_flashed_messages()%}
+            {% if messages %}
+                {% for message in messages %}
+                    <div><p style="color:red">{{message}}</p></div>
+                {% endfor %}
+            {% endif%}
+        {% endwith %}
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        {{ form.username }}<br><br>
+        {{ form.password }}<br><br>
+        {{ form.submit }}<br><br>
+    </form>
+        <a href="{{ url_for('register') }}">註冊</a>
+        <br>
+        <a href="{{ url_for('index') }}">回首頁</a>
+    </div>
+</body>
+
+</html>

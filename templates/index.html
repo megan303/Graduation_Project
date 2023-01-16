@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+
+<body>
+    <h1>寸關尺</h1><br>
+    <div>
+        <form method='post' action="{{ url_for('login') }}">
+            <button type="submit">登入</button>
+        </form><br>
+        <form method='post' action="{{ url_for('register') }}">
+            <button type="submit">註冊</button>
+        </form>
+    </div>
+</body>
+
+</html>

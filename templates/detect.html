@@ -7,10 +7,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detect</title>
 </head>
-
+<style>
+    body{
+            background-image:url('https://i.pinimg.com/564x/0d/65/93/0d65931d8f3996c99d5504b13b22120f.jpg');
+            text-align:center;
+        }
+</style>
 <body>
     <div style = "text-align:center;">
         <h1>偵測</h1>
+        <img src="{{url_for('static', filename='coolmagni.png')}}" alt="detect" />
         <img src="{{ url_for('video_feed') }}" height="50%" width="70%" >
         <br><br>
         <form action="{{ url_for('detect')}}" method="POST" enctype = "multipart/form-data">

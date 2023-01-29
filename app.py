@@ -212,6 +212,7 @@ def release_camera():
 @login_required
 def select_file():
     if request.method == "POST":
+        error = None
         file = request.files['img']
         if file.filename == '':
             flash('No selected file')

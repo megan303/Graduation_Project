@@ -8,22 +8,24 @@ from flask_bcrypt import Bcrypt
 from werkzeug.utils import secure_filename
 import webbrowser
 import numpy as np
-import os, cv2
+import os
+import cv2
 import math
 import nums_from_string as nfs
 import mediapipe as mp
 from func import cut_img, find_coor
 from PIL import Image
+#from gevent import pywsgi
 
-#創建Flask物件app并初始化
+# 創建Flask物件app并初始化
 app = Flask(__name__)
-pjdir = os.path.abspath(os.path.dirname(__file__)) # 取得目前文件資料夾路徑
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}  # 設定可上傳圖片字尾 
-# 結合目前的檔案路徑和static及uploads路徑 
+pjdir = os.path.abspath(os.path.dirname(__file__))  # 取得目前文件資料夾路徑
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}  # 設定可上傳圖片字尾
+# 結合目前的檔案路徑和static及uploads路徑
 UPLOAD_FOLDER = os.path.join(pjdir,  'static', 'uploads')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + \
-    os.path.join(pjdir, 'database.sqlite') # 設置sqlite檔案路徑
+    os.path.join(pjdir, 'database.sqlite')  # 設置sqlite檔案路徑
 #app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SECRET_KEY'] = 'secretkey'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -35,7 +37,8 @@ color_red = (0, 0, 255)
 color_blue = (255, 0, 0)
 
 mpHands = mp.solutions.hands
-hands = mpHands.Hands(min_detection_confidence=0.5, min_tracking_confidence=0.5, max_num_hands = 1)
+hands = mpHands.Hands(min_detection_confidence=0.5,
+                      min_tracking_confidence=0.5, max_num_hands=1)
 
 global frame, camera, camera_mode, capture, det
 camera_mode = False
@@ -47,33 +50,37 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return UserReister.query.get(int(user_id))
 
-class UserReister(db.Model, UserMixin): # 記錄使用者資料的資料表
+
+class UserReister(db.Model, UserMixin):  # 記錄使用者資料的資料表
     __tablename__ = 'UserRgeisters'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
     user_point = db.Column(db.String(100), nullable=False)
+
     def __init__(self, username, password, user_point):
         self.username = username
         self.password = password
         self.user_point = user_point
 
+
 class RegisterForm(FlaskForm):
     username = StringField(validators=[
-                        InputRequired(), Length(min=3, max=20)], render_kw={"placeholder": "使用者名稱"})
+        InputRequired(), Length(min=3, max=20)], render_kw={"placeholder": "使用者名稱"})
 
     password = PasswordField(validators=[
-                        InputRequired(), 
-                        Length(min=6, max=20),
-                        EqualTo('pass_confirm', message='PASSWORD NEED MATCH')], 
-                        render_kw={"placeholder": "密碼"})
-    
+        InputRequired(),
+        Length(min=6, max=20),
+        EqualTo('pass_confirm', message='PASSWORD NEED MATCH')],
+        render_kw={"placeholder": "密碼"})
+
     pass_confirm = PasswordField(validators=[
-                        InputRequired(), Length(min=6, max=20)], render_kw={"placeholder": "確認密碼"})
+        InputRequired(), Length(min=6, max=20)], render_kw={"placeholder": "確認密碼"})
     submit = SubmitField('註冊')
     '''
     def validate_username(self, field):
@@ -81,29 +88,32 @@ class RegisterForm(FlaskForm):
             raise ValidationError('此名稱已有使用者註冊，請輸入新的名稱')
     '''
 
+
 class LoginForm(FlaskForm):
     username = StringField(validators=[
-                        InputRequired(), Length(min=3, max=20)], render_kw={"placeholder": "使用者名稱"})
+        InputRequired(), Length(min=3, max=20)], render_kw={"placeholder": "使用者名稱"})
     password = PasswordField(validators=[
-                        InputRequired(), Length(min=6, max=20)], render_kw={"placeholder": "密碼"})
+        InputRequired(), Length(min=6, max=20)], render_kw={"placeholder": "密碼"})
     submit = SubmitField('登入')
 
-def allowed_file(filename): # 檢查上傳圖片是否在可上傳圖片允許列表
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-                
 
-#通過python裝飾器的方法定義路由地址
+def allowed_file(filename):  # 檢查上傳圖片是否在可上傳圖片允許列表
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+# 通過python裝飾器的方法定義路由地址
 @app.route("/")
 def index():
     return render_template('index.html')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        username=form.username.data
+        username = form.username.data
         hashed_password = bcrypt.generate_password_hash(form.password.data)
-        password=hashed_password
+        password = hashed_password
         user_point = "NONE"
         user_data = UserReister.query.filter_by(username=username).first()
         if user_data:
@@ -117,6 +127,7 @@ def register():
             return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -125,28 +136,32 @@ def login():
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
-                #flash("成功登入!!")
-                #return 'Success Thank You'
+                # flash("成功登入!!")
+                # return 'Success Thank You'
                 return redirect(url_for('select_func'))
             else:
                 flash("使用者名稱或密碼錯誤")
                 return redirect(url_for('login'))
     return render_template('login.html', form=form)
 
-@app.route('/logout',methods=['POST','GET'])
+
+@app.route('/logout', methods=['POST', 'GET'])
 @login_required
 def logout():
-    #Logs a user out. (You do not need to pass the actual user.)
+    # Logs a user out. (You do not need to pass the actual user.)
     # This will also clean up the remember me cookie if it exists.
     logout_user()
     return redirect(url_for('login'))
 
-@app.route('/select_func',methods=['POST','GET'])
+
+@app.route('/select_func', methods=['POST', 'GET'])
 @login_required
 def select_func():
     user = load_user(current_user.id)
-    return render_template('select_func.html', welcome_text = "歡迎 " + user.username + "!!")
+    return render_template('select_func.html', welcome_text="歡迎 " + user.username + "!!")
 #######################################################################################
+
+
 def frames(user):
     global camera_mode, capture, det
     camera_mode = True
@@ -163,20 +178,20 @@ def frames(user):
         while True:
             success, frame = camera.read()
             if success:
-                if(capture):
+                if (capture):
                     capture = 0
                     filename = user.username + '.jpg'
                     file_path = os.path.join(UPLOAD_FOLDER, filename)
                     cv2.imwrite(file_path, frame)
                     camera.release()
-                if(det):
+                if (det):
                     H = frame.shape[0]
                     W = frame.shape[1]
                     wrist_x = 0  # 腕關節
                     wrist_y = 0
                     img_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     result = hands.process(img_gray)  # 偵測手
-    
+
                     if result.multi_hand_landmarks:
                         for handLms in result.multi_hand_landmarks:
                             for i, lm in enumerate(handLms.landmark):
@@ -189,17 +204,20 @@ def frames(user):
                         for i in range(0, len(coor)):
                             #print("dis:", coor[i])
                             #print("radius:", radius[i])
-                            frame = cv2.circle(frame, (wrist_x - coor[i][0], wrist_y + coor[i][1]), radius[i], color_red, 1)
-                            frame = cv2.circle(frame, (wrist_x - coor[i][0], wrist_y + coor[i][1]), 2, color_blue, 1)
+                            frame = cv2.circle(
+                                frame, (wrist_x - coor[i][0], wrist_y + coor[i][1]), radius[i], color_red, 1)
+                            frame = cv2.circle(
+                                frame, (wrist_x - coor[i][0], wrist_y + coor[i][1]), 2, color_blue, 1)
                 try:
                     ret, buffer = cv2.imencode('.jpg', cv2.flip(frame, 1))
                     frame = buffer.tobytes()
                     yield (b'--frame\r\n'
-                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+                           b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
                 except Exception as e:
                     pass
             else:
                 pass
+
 
 def release_camera():
     try:
@@ -208,7 +226,9 @@ def release_camera():
     except:
         pass
 ########################################################################################
-@app.route('/select_file',methods=['POST','GET'])
+
+
+@app.route('/select_file', methods=['POST', 'GET'])
 @login_required
 def select_file():
     if request.method == "POST":
@@ -220,7 +240,7 @@ def select_file():
         if not (file and allowed_file(file.filename)):
             flash('請檢查上傳的圖片類型, 限png, jpg, jpeg')
             return render_template('select_file.html')
-        if not os.path.exists(app.config['UPLOAD_FOLDER']): # 如果資料夾不存在，就建立資料夾
+        if not os.path.exists(app.config['UPLOAD_FOLDER']):  # 如果資料夾不存在，就建立資料夾
             os.makedirs(app.config['UPLOAD_FOLDER'])
         user = load_user(current_user.id)
         filename = secure_filename(file.filename)
@@ -232,11 +252,13 @@ def select_file():
         coor, radius = find_coor(img, file_path)
         points = ""
         for i in range(0, len(coor)):
-            points = str(coor[i][0]) + "," + str(coor[i][1]) + "," + str(radius[i]) + "|"
+            points = str(coor[i][0]) + "," + str(coor[i]
+                                                 [1]) + "," + str(radius[i]) + "|"
         user.user_point = points
         db.session.commit()
         return redirect(url_for('show_result'))
     return render_template('select_file.html')
+
 
 @app.route('/show_result', methods=['GET'])
 @login_required
@@ -246,14 +268,16 @@ def show_result():
     user = load_user(current_user.id)
     path = "/static/uploads/" + user.username + ".jpg"
     return render_template("show_result.html", user_image=path)
-    
+
+
 @app.route('/video_feed')
 @login_required
 def video_feed():
     user = load_user(current_user.id)
-    return Response(frames(user), mimetype = 'multipart/x-mixed-replace; boundary=frame')
+    return Response(frames(user), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route('/take_photo',methods=['POST','GET'])
+
+@app.route('/take_photo', methods=['POST', 'GET'])
 @login_required
 def take_photo():
     global camera_mode, camera
@@ -265,7 +289,8 @@ def take_photo():
             return redirect(url_for('show_result'))
     return render_template('take_photo.html')
 
-@app.route('/detect', methods=['POST','GET'])
+
+@app.route('/detect', methods=['POST', 'GET'])
 @login_required
 def detect():
     if request.method == 'POST':
@@ -277,5 +302,9 @@ def detect():
             det = not det
     return render_template('detect.html')
 
+
 if __name__ == '__main__':
-    app.run(host="localhost", port=3000, debug=True)
+    app.run(host="localhost", port=3000)
+    app.debug = True
+    #server = pywsgi.WSGIServer(("localhost", 3000), app)
+    # server.serve_forever()

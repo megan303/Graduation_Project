@@ -7,11 +7,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload</title>
 </head>
-
+<style>
+    body{
+            background-image:url('https://i.pinimg.com/564x/c2/f9/ba/c2f9ba98750d9da3be801702a524ade9.jpg');
+            text-align:center;
+        }
+</style>
 <body>
     <div style = "text-align:center;"></div>
     <h1>{{ welcome_text }}</h1><br>
     <h2>請選擇功能</h2><br>
+    <img src="{{url_for('static', filename='tool.png')}}" alt="tool" />
     <form action="{{ url_for('take_photo') }}">
         <button type="submit">拍照上傳</button>
     </form>

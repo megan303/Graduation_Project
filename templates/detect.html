@@ -22,6 +22,9 @@
         <form action="{{ url_for('detect')}}" method="POST" enctype = "multipart/form-data">
             <input type="submit" value="Detect" name="det"/>
         </form>
+        <a href="{{ url_for('select_func') }}">回功能選擇頁面</a>
+        <br/>
+        <a href="{{ url_for('index') }}">回首頁</a>
     </div>
 </body>
 

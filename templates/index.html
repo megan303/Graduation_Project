@@ -16,7 +16,7 @@ body{
 
 <body>
     <br/>
-    <b><font size="50">寸關尺</font></b><br/>
+    <b><font size="50">寸關尺</font></b><br/><br/>
     <div>
      <i>
         寸口脈法：寸口分為寸、關、尺三部，兩手各有寸關尺，和人體的五臟對應， 
@@ -27,13 +27,13 @@ body{
      <i>
         浮、中、沉：用指目按壓在脈的位置上，用輕、中、重三種力度感受脈象的深度。
      </i><br/>
-    </div>
+    </div><br/>
     <img src="{{url_for('static', filename='heart2.png')}}" alt="heart" />
-     
+    <br/>
      <div>
         <form method='post' action="{{ url_for('login') }}">
             <button type="submit">登入</button>
-        </form><br>
+        </form><br/>
         <form method='post' action="{{ url_for('register') }}">
             <button type="submit">註冊 </button>
         </form>

@@ -252,7 +252,8 @@ def select_file():
         coor, radius = find_coor(img, file_path)
         points = ""
         for i in range(0, len(coor)):
-            points = str(coor[i][0]) + "," + str(coor[i][1]) + "," + str(radius[i]) + "|"
+            points = str(coor[i][0]) + "," + str(coor[i]
+                                                 [1]) + "," + str(radius[i]) + "|"
         user.user_point = points
         db.session.commit()
         return redirect(url_for('show_result'))

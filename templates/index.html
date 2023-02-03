@@ -8,29 +8,35 @@
 </head>
 
 <style>
-body{
+    body{
         background-image:url('https://i.pinimg.com/564x/32/e3/45/32e34536471ac7ead9adeac6f6a61b7c.jpg');
         text-align:center;
+    }
+    h1{
+        font-size:50px;
+    }
+    .heart{
+        padding:100px;
     }
 </style>
 
 <body>
-    <br/>
-    <b><font size="50">寸關尺</font></b><br/><br/>
+    <b><h1>寸關尺 </h1></b>
+    <b><h1>Cun Guan Chi</h1></b>
     <div>
-     <i>
-        寸口脈法：寸口分為寸、關、尺三部，兩手各有寸關尺，和人體的五臟對應， 
-     </i><br/>
-     <i>
-        左手寸關尺對應心肝腎，右手寸關尺對應肺脾腎。
-     </i><br/>
-     <i>
-        浮、中、沉：用指目按壓在脈的位置上，用輕、中、重三種力度感受脈象的深度。
-     </i><br/>
+        <p>
+            寸口脈法：寸口分為寸、關、尺三部，兩手各有寸關尺，和人體的五臟對應， 
+        </p>
+        <p>
+            左手寸關尺對應心肝腎，右手寸關尺對應肺脾腎。
+        </p>
+        <p>
+            浮、中、沉：用指目按壓在脈的位置上，用輕、中、重三種力度感受脈象的深度。
+        </p>
     </div><br/>
     <img src="{{url_for('static', filename='heart2.png')}}" alt="heart" />
-    <br/>
-     <div>
+    
+     <div class=heart>
         <form method='post' action="{{ url_for('login') }}">
             <button type="submit">登入</button>
         </form><br/>

@@ -1,0 +1,12 @@
+Flask==2.2.3
+flask_bcrypt==1.0.1
+flask_login==0.6.2
+flask_sqlalchemy==3.0.3
+flask_wtf==1.1.1
+mediapipe==0.9.1.0
+
+nums_from_string==0.1.2
+
+rembg==2.0.30
+Werkzeug==2.2.3
+WTForms==3.0.1

@@ -1,1 +1,1 @@
-flask_sqlalchemy
+os.path.join(UPLOAD_FOLDER, filename)

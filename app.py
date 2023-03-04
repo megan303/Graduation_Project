@@ -173,18 +173,37 @@ def frames(user):
         for i in range(0, len(number_list), 3):
             coor.append([number_list[i], number_list[i + 1]])
             radius.append(number_list[i + 2])
+        print("det in")
     if camera_mode == True:
         camera = cv2.VideoCapture(2)
         while True:
             success, frame = camera.read()
+            #frame = cv2.flip(frame, 1)
             if success:
                 if (capture):
                     capture = 0
+                    '''
+                    if not os.path.exists(app.config['UPLOAD_FOLDER']):  # 如果資料夾不存在，就建立資料夾
+                        os.makedirs(app.config['UPLOAD_FOLDER'])
+                    filename = user.username + '.jpg'
+                    file_path = os.path.join(UPLOAD_FOLDER, filename)
+                    #filee = request.files['img'].read()
+                    #npimg = np.frombuffer(frame, np.uint8)
+                    #img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+                    coor, radius = find_coor(frame, file_path)
+                    points = ""
+                    for i in range(0, len(coor)):
+                        points = str(coor[i][0]) + "," + str(coor[i]
+                                                 [1]) + "," + str(radius[i]) + "|"
+                    user.user_point = points
+                    db.session.commit()
+                    '''
                     filename = user.username + '.jpg'
                     file_path = os.path.join(UPLOAD_FOLDER, filename)
                     cv2.imwrite(file_path, frame)
                     camera.release()
                 if (det):
+                    print("det in2")
                     H = frame.shape[0]
                     W = frame.shape[1]
                     wrist_x = 0  # 腕關節
@@ -274,6 +293,8 @@ def show_result():
 @login_required
 def video_feed():
     user = load_user(current_user.id)
+    global camera_mode
+    camera_mode = True
     return Response(frames(user), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 

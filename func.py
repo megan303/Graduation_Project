@@ -2,6 +2,7 @@ import numpy as np
 import os, cv2, pathlib
 import math
 import mediapipe as mp
+from PIL import Image
 
 color_green = (0, 255, 0)
 color_red = (0, 0, 255)
@@ -10,10 +11,15 @@ low_bound = 30
 upper_bound = 200
 
 #img = cv2.imread('static\\uploads\\capture0.jpg')
+pjdir = os.path.abspath(os.path.dirname(__file__))
+UPLOAD_FOLDER = os.path.join(pjdir,  'static', 'uploads')
 def cut_img(img):
+    print("img type: ", type(img))
     mpHands = mp.solutions.hands
     hands = mpHands.Hands(min_detection_confidence=0.5, min_tracking_confidence=0.5, max_num_hands = 1)
+    #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     result = hands.process(img)
+    print("in")
     if result.multi_hand_landmarks:
         h = img.shape[0]
         w = img.shape[1]
@@ -23,6 +29,7 @@ def cut_img(img):
         mid_y = 0
         pinky_x = 0
         pinky_y = 0
+        print("in1")
         for handLms in result.multi_hand_landmarks:
             for i, lm in enumerate(handLms.landmark):
                 xPos = round(lm.x * w)
@@ -38,7 +45,8 @@ def cut_img(img):
                     pinky_y = yPos
         c = 13
         start_y = mid_y - c
-        end_y = mid_y + 400
+        end_y = mid_y + 350
+        print("in2")
         if result.multi_handedness[0].classification[0].label == "Left": #right hand
             start_x = pinky_x - c
             end_x = thumb_x + c 
@@ -48,14 +56,20 @@ def cut_img(img):
             end_x = pinky_x + c
             new_img = img[start_y:end_y, start_x:end_x]
         print("Work!")
+        print("new_img_type: ", type(new_img))
         return new_img
 
 def find_coor(img, file_path):
+    #cv2.imshow("img2", img)
+    print("ori_img_type: ", type(img))
     img = cut_img(img)
+    cv2.imwrite("new_img.jpg", img)
+    print("cut_img_type: ", type(img))
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    #cv2.imshow("img2", gray)
     canny_img = cv2.Canny(gray, low_bound, upper_bound)
     circles = cv2.HoughCircles(canny_img, cv2.HOUGH_GRADIENT, 1,
-                                20, param1=120, param2=30, minRadius=5, maxRadius=45)
+                                20, param1=120, param2=30, minRadius=5, maxRadius=50)
     
     mpHands = mp.solutions.hands
     hands = mpHands.Hands(min_detection_confidence=0.5, min_tracking_confidence=0.5, max_num_hands = 1)

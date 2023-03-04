@@ -173,9 +173,9 @@ def frames(user):
         for i in range(0, len(number_list), 3):
             coor.append([number_list[i], number_list[i + 1]])
             radius.append(number_list[i + 2])
-        print("det in")
+        #print("det in")
     if camera_mode == True:
-        camera = cv2.VideoCapture(2)
+        camera = cv2.VideoCapture(1)
         while True:
             success, frame = camera.read()
             #frame = cv2.flip(frame, 1)
@@ -203,7 +203,7 @@ def frames(user):
                     cv2.imwrite(file_path, frame)
                     camera.release()
                 if (det):
-                    print("det in2")
+                    #print("det in2")
                     H = frame.shape[0]
                     W = frame.shape[1]
                     wrist_x = 0  # 腕關節
@@ -271,8 +271,9 @@ def select_file():
         coor, radius = find_coor(img, file_path)
         points = ""
         for i in range(0, len(coor)):
-            points = str(coor[i][0]) + "," + str(coor[i]
-                                                 [1]) + "," + str(radius[i]) + "|"
+            points = points + str(coor[i][0]) + "," + str(coor[i]
+                                                          [1]) + "," + str(radius[i]) + "|"
+        print("points:", points)
         user.user_point = points
         db.session.commit()
         return redirect(url_for('show_result'))

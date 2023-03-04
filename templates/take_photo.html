@@ -20,7 +20,7 @@
     <div style = "text-align:center;">
         <h1>拍照</h1>
         <img src="{{url_for('static', filename='cam.png')}}" alt="cam" />
-        <img src="{{ url_for('video_feed') }}" height="50%" width="70%" >
+        <img src="{{ url_for('video_feed') }}" height="30%" width="50%" >
         <br><br>
         <form action="{{ url_for('take_photo')}}" method="POST" enctype = "multipart/form-data">
             <input type="submit" value="Capture" name="click"/>

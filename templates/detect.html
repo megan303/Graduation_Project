@@ -22,7 +22,7 @@
     <div style = "text-align:center;">
         <h1>偵測</h1>
         <img src="{{url_for('static', filename='coolmagni.png')}}" alt="detect" />
-        <img src="{{ url_for('video_feed') }}" height="50%" width="70%" >
+        <img src="{{ url_for('video_feed') }}" height="30%" width="50%" >
         <br><br>
         <form action="{{ url_for('detect')}}" method="POST" enctype = "multipart/form-data">
             <input type="submit" value="Detect" name="det"/>

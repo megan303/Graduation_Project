@@ -19,11 +19,13 @@
 <body>
     <div style = "text-align:center;">
         <h1>選擇檔案上傳</h1>
+        <p>只接受png, jpg, jpeg檔</p>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         <ul class="flash">
             {% for message in messages %}
                 <p>{{ message }}</p>
+                <img src="{{url_for('static', filename='wrongicon.png')}}" alt="wrong" />
             {% endfor %}
         </ul>
         {% endif %}

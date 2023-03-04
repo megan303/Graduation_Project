@@ -238,7 +238,7 @@ def select_file():
             flash('No selected file')
             return render_template('select_file.html')
         if not (file and allowed_file(file.filename)):
-            flash('請檢查上傳的圖片類型, 限png, jpg, jpeg')
+            flash('請檢查上傳的圖片類型')
             return render_template('select_file.html')
         if not os.path.exists(app.config['UPLOAD_FOLDER']):  # 如果資料夾不存在，就建立資料夾
             os.makedirs(app.config['UPLOAD_FOLDER'])

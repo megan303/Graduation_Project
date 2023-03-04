@@ -20,13 +20,13 @@
     <div style = "text-align:center;"></div>
     <h1>{{ welcome_text }}</h1><br>
     <h2>請選擇功能</h2><br>
-    <img src="{{url_for('static', filename='tool.png')}}" alt="tool" />
+    <img src="{{url_for('static', filename='tool.png')}}" alt="tool" /><br>
     <form action="{{ url_for('take_photo') }}">
         <button type="submit">拍照上傳</button>
-    </form>
+    </form><br>
     <form action="{{ url_for('select_file') }}">
         <button type="submit">選擇檔案上傳</button>
-    </form>
+    </form><br>
     <form action="{{ url_for('detect') }}">
         <button type="submit">偵測</button>
     </form>

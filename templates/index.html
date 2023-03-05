@@ -13,66 +13,23 @@
     body{
         background-image:url('https://i.pinimg.com/564x/32/e3/45/32e34536471ac7ead9adeac6f6a61b7c.jpg');
     }
-
-    p{
-        font-size:18px;
-        font-weight:600;
-    }
-    .heart{
-        padding-top:85px;
-    }
-    .button {
-        border: none;
-        color: white;
-        padding: 10px 24px;
-        text-align: center;
-        display: inline-block;
-        margin: 4px 2px;
-        transition-duration: 0.4s;
-        cursor: pointer;
-        border-radius:25px;
-    }
-    .button1 {
-        background-color: white; 
-        color: black; 
-        border: 2px solid #4CAF50;
-    }
-      
-    .button1:hover {
-        background-color: #4CAF50;
-        color: white;
-    }
-      
-    .button2 {
-        background-color: white; 
-        color: black; 
-        border: 2px solid #008CBA;
-    }
-      
-    .button2:hover {
-        background-color: #008CBA;
-        color: white;
-    }
-      
 </style>
 
 <body>
     <b><h1>寸關尺 </h1></b>
     <b><h1>Cun Guan Chi</h1></b>
     <div>
-        <p>
+        <pre>
             寸口脈法：寸口分為寸、關、尺三部，兩手各有寸關尺，和人體的五臟對應， 
-        </p>
-        <p>
+
             左手寸關尺對應心肝腎，右手寸關尺對應肺脾腎。
-        </p>
-        <p>
+
             浮、中、沉：用指目按壓在脈的位置上，用輕、中、重三種力度感受脈象的深度。
-        </p>
-    </div><br/>
-    <img src="{{url_for('static', filename='material/heart2.png')}}" alt="heart" />
-    
-     <div class=heart>
+        </pre>
+    </div>
+    <img src="{{url_for('static', filename='material/heart2.png')}}" alt="heart" /> 
+    <p></p>
+    <div class= >
         <form method='post' action="{{ url_for('login') }}">
             <button class="button button1" type="submit">登入</button>
         </form><br/>
@@ -84,6 +41,3 @@
 
 </html>
 
-<!--
-background-image:url({{url_for('static',filename='bg.jpg')}})
--->

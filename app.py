@@ -158,7 +158,7 @@ def logout():
 @login_required
 def select_func():
     user = load_user(current_user.id)
-    return render_template('select_func.html', welcome_text="歡迎 " + user.username + "!!")
+    return render_template('select_func.html', welcome_text="歡迎 " + user.username + " !!")
 #######################################################################################
 
 

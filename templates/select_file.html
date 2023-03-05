@@ -30,9 +30,10 @@
         {% endwith %}
         <img src="{{url_for('static', filename='material/pic.png')}}" alt="picture" />
         <form action="{{ url_for('select_file')}}" method="POST" enctype = "multipart/form-data">
-            <input type = "file" size = "30" name = "img"/>
-            <br>
-            <input type = "submit" value = "上傳" accept=".jpg, .jpeg, .png" style = "margin-top:15px;"  class = "button"/>
+            <input class=" " type = "file" size = "30" name = "img"/><br>
+            <input class="button button3" type = "submit" value = "上傳" accept=".jpg, .jpeg, .png" style = "margin-top:15px;"/>
+        </form><br>
+        <a href="{{ url_for('select_func') }}">回功能選擇頁面</a>
     </div>
 </body>
 

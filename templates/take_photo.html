@@ -21,8 +21,9 @@
         <img src="{{ url_for('video_feed') }}" height="30%" width="50%" >
         <br><br>
         <form action="{{ url_for('take_photo')}}" method="POST" enctype = "multipart/form-data">
-            <input type="submit" value="Capture" name="click"/>
-        </form>
+            <input class="button button3" type="submit" value="Capture" name="click"/>
+        </form><br>
+        <a href="{{ url_for('select_func') }}">回功能選擇頁面</a>
     </div>
 </body>
 

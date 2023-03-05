@@ -12,10 +12,6 @@
     body{
         background-image:url('https://i.pinimg.com/564x/14/94/bd/1494bd6c9b403777a9324e5e94212714.jpg');
     }
-    h1{
-        font-size:50px;
-    }
-     
 </style>
 <body>
     <div>
@@ -33,7 +29,7 @@
             {{ form.hidden_tag() }}
             {{ form.username }}<br><br>
             {{ form.password }}<br><br>
-            {{ form.submit }}<br><br>
+            {{ form.submit(class_='button button1') }}<br><br>
         </form>
         <a href="{{ url_for('register') }}">註冊</a>
         <p></p>

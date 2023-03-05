@@ -6,15 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select File</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/beauty.css')}}"/>
 </head>
 <style>
     body{
         background-image:url('https://i.pinimg.com/564x/f2/a0/cf/f2a0cf8189a98e64a1f3c642a370fc1c.jpg');
-        text-align:center;
     }
-    h1{
-        font-size:50px;
-    }
+   
 </style>
 <body>
     <div style = "text-align:center;">
@@ -25,12 +23,12 @@
         <ul class="flash">
             {% for message in messages %}
                 <p>{{ message }}</p>
-                <img src="{{url_for('static', filename='wrongicon.png')}}" alt="wrong" />
+                <img src="{{url_for('static', filename='material/wrongicon.png')}}" alt="wrong" />
             {% endfor %}
         </ul>
         {% endif %}
         {% endwith %}
-        <img src="{{url_for('static', filename='pic.png')}}" alt="picture" />
+        <img src="{{url_for('static', filename='material/pic.png')}}" alt="picture" />
         <form action="{{ url_for('select_file')}}" method="POST" enctype = "multipart/form-data">
             <input type = "file" size = "30" name = "img"/>
             <br>

@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/beauty.css')}}"/>
 </head>
 
 <style>
     body{
         background-image:url('https://i.pinimg.com/564x/32/e3/45/32e34536471ac7ead9adeac6f6a61b7c.jpg');
-        text-align:center;
     }
-    h1{
-        font-size:50px;
-    }
+
     p{
         font-size:18px;
         font-weight:600;
@@ -71,7 +70,7 @@
             浮、中、沉：用指目按壓在脈的位置上，用輕、中、重三種力度感受脈象的深度。
         </p>
     </div><br/>
-    <img src="{{url_for('static', filename='heart2.png')}}" alt="heart" />
+    <img src="{{url_for('static', filename='material/heart2.png')}}" alt="heart" />
     
      <div class=heart>
         <form method='post' action="{{ url_for('login') }}">

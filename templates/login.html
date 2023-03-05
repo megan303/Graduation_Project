@@ -6,11 +6,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/beauty.css')}}"/>
 </head>
 <style>
     body{
         background-image:url('https://i.pinimg.com/564x/14/94/bd/1494bd6c9b403777a9324e5e94212714.jpg');
-        text-align:center;
     }
     h1{
         font-size:50px;
@@ -20,7 +20,7 @@
 <body>
     <div>
         <h1>使用者登入</h1>
-        <img src="{{url_for('static', filename='login .png')}}" alt="login" />
+        <img src="{{url_for('static', filename='material/login .png')}}" alt="login" />
             {{ login_status }}<br>
             {% with messages = get_flashed_messages()%}
                 {% if messages %}

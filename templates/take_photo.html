@@ -6,20 +6,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Take Photo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/beauty.css')}}"/>
 </head>
 <style>
     body{
         background-image:url('https://i.pinimg.com/564x/f2/a0/cf/f2a0cf8189a98e64a1f3c642a370fc1c.jpg');
-        text-align:center;
     }
-    h1{
-        font-size:50px;
-    }
+    
 </style>
 <body>
     <div style = "text-align:center;">
         <h1>拍照</h1>
-        <img src="{{url_for('static', filename='cam.png')}}" alt="cam" />
+        <img src="{{url_for('static', filename='material/cam.png')}}" alt="cam" />
         <img src="{{ url_for('video_feed') }}" height="30%" width="50%" >
         <br><br>
         <form action="{{ url_for('take_photo')}}" method="POST" enctype = "multipart/form-data">

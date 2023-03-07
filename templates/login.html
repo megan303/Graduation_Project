@@ -31,9 +31,13 @@
             {{ form.password }}<br><br>
             {{ form.submit(class_='button button1') }}<br><br>
         </form>
-        <a href="{{ url_for('register') }}">註冊</a>
-        <p></p>
-        <a href="{{ url_for('index') }}">回首頁</a>
+        <form action="{{ url_for('register') }}">
+            <button class="button button2" type="submit">註冊</button>
+        </form><br>
+        <form action="{{ url_for('index') }}">
+            <button class="button button3" type="submit">回首頁</button>
+        </form>
+
     </div>
 </body>
 

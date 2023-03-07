@@ -59,3 +59,14 @@ pre {
     background-color: #4700ba;
     color: white;
 }
+
+.button4 {
+    background-color: white;
+    color: black;
+    border: 2px solid #ba0000;
+}
+
+.button4:hover {
+    background-color: #ba0000;
+    color: white;
+}

@@ -23,7 +23,9 @@
         <form action="{{ url_for('take_photo')}}" method="POST" enctype = "multipart/form-data">
             <input class="button button3" type="submit" value="Capture" name="click"/>
         </form><br>
-        <a href="{{ url_for('select_func') }}">回功能選擇頁面</a>
+        <form action="{{ url_for('select_func') }}">
+            <button class="button button1" type="submit">回功能選擇頁面</button>
+        </form>
     </div>
 </body>
 

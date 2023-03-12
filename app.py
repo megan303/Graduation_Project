@@ -13,7 +13,7 @@ import cv2
 import math
 import nums_from_string as nfs
 import mediapipe as mp
-from func import cut_img, find_coor
+from func import cut_img, find_coor, calculate_distance_for_scale
 from PIL import Image
 #from gevent import pywsgi
 

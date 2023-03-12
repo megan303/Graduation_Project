@@ -117,3 +117,28 @@ def find_coor(img, file_path):
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+def calculate_distance_for_scale(image_path):
+    mp_hands = mp.solutions.hands
+    hands = mp_hands.Hands(static_image_mode=True,min_tracking_confidence=0.5)
+    image = cv2.cvtColor(image_path, cv2.COLOR_BGR2RGB)
+    results = hands.process(image)
+    distance = 0.0
+    x0, y0 = 0.0, 0.0
+    x9, y9 = 0.0, 0.0
+    flag = False
+    if results.multi_hand_landmarks:
+        for hand_landmarks in results.multi_hand_landmarks:
+            if(flag == True):
+                    break
+            for ids, landmrk in enumerate(hand_landmarks.landmark):
+                if(flag == True):
+                    break
+                if(ids == 0):
+                    x0, y0 = landmrk.x, landmrk.y
+                elif(ids == 9):
+                    x9, y9 = landmrk.x, landmrk.y
+                if(x0 != 0 and y0 != 0 and x9 != 0 and y9 != 0):
+                    flag = True
+                    distance = math.sqrt((x0 - x9) ** 2 + (y0 - y9) ** 2)
+    return distance

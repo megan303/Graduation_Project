@@ -254,13 +254,15 @@ def select_file():
         error = None
         file = request.files['img']
         if file.filename == '':
-            flash('No selected file')
+            flash('請選擇檔案上傳')
             return render_template('select_file.html')
         if not (file and allowed_file(file.filename)):
             flash('請檢查上傳的圖片類型')
             return render_template('select_file.html')
         if not os.path.exists(app.config['UPLOAD_FOLDER']):  # 如果資料夾不存在，就建立資料夾
             os.makedirs(app.config['UPLOAD_FOLDER'])
+        else:
+            return render_template('uploadfail.html')
         user = load_user(current_user.id)
         filename = secure_filename(file.filename)
         filename = user.username + '.jpg'

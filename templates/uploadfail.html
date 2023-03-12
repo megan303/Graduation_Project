@@ -16,7 +16,13 @@
 <body>
     <div>
         <h1>Plz, choose another one and do in again</h1>
-        
+        <img src="{{url_for('static', filename='material/plz.png')}}" alt="sorry" />
+        <form action="{{ url_for('take_photo') }}">
+            <button class="button button1" type="submit">拍照</button>
+        </form><br>
+        <form action="{{ url_for('select_file') }}">
+            <button class="button button2" type="submit">選擇檔案上傳</button>
+        </form> 
     </div>
 </body>
 

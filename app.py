@@ -228,7 +228,7 @@ def frames(user):
                             frame = cv2.circle(
                                 frame, (wrist_x - coor[i][0], wrist_y + coor[i][1]), 2, color_blue, 1)
                 try:
-                    ret, buffer = cv2.imencode('.jpg', cv2.flip(frame, 1))
+                    ret, buffer = cv2.imencode('.jpg', frame)
                     frame = buffer.tobytes()
                     yield (b'--frame\r\n'
                            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')

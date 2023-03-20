@@ -62,11 +62,13 @@ class UserReister(db.Model, UserMixin):  # 記錄使用者資料的資料表
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
     user_point = db.Column(db.String(100), nullable=False)
+    proportion = db.Column(db.Float(), nullable=True)
 
-    def __init__(self, username, password, user_point):
+    def __init__(self, username, password, user_point, proportion):
         self.username = username
         self.password = password
         self.user_point = user_point
+        self.proportion = proportion
 
 
 class RegisterForm(FlaskForm):
@@ -206,6 +208,13 @@ def frames(user):
                     #print("det in2")
                     H = frame.shape[0]
                     W = frame.shape[1]
+
+                    x0, y0 = 0.0, 0.0
+                    x9, y9 = 0.0, 0.0
+                    cam_distance = 0.0
+                    distance = user.propotion
+                    scale = 0.0
+
                     wrist_x = 0  # 腕關節
                     wrist_y = 0
                     img_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -217,16 +226,21 @@ def frames(user):
                                 xPos = round(lm.x * W)
                                 yPos = round(lm.y * H)
                                 if i == 0:  # wrist point
-                                    wrist_x = xPos
-                                    wrist_y = yPos
+                                    wrist_x, wrist_y = xPos, yPos
+                                    x0, y0 = lm.x, lm.y
+                                elif i == 9:
+                                    x9, y9 = lm.x, lm.y
+                                if(x0 != 0 and y0 != 0 and x9 != 0 and y9 != 0):
+                                    cam_distance = math.sqrt((x0 - x9) ** 2 + (y0 - y9) ** 2)
+                                scale = distance / cam_distance
                         wrist_y = wrist_y + 15
                         for i in range(0, len(coor)):
                             #print("dis:", coor[i])
                             #print("radius:", radius[i])
                             frame = cv2.circle(
-                                frame, (wrist_x - coor[i][0], wrist_y + coor[i][1]), radius[i], color_red, 1)
+                                frame, (wrist_x - coor[i][0], wrist_y + coor[i][1]), radius[i] * scale, color_red, 1)
                             frame = cv2.circle(
-                                frame, (wrist_x - coor[i][0], wrist_y + coor[i][1]), 2, color_blue, 1)
+                                frame, (wrist_x - coor[i][0], wrist_y + coor[i][1]), 2 * scale, color_blue, 1)
                 try:
                     ret, buffer = cv2.imencode('.jpg', frame)
                     frame = buffer.tobytes()
@@ -276,7 +290,9 @@ def select_file():
             points = points + str(coor[i][0]) + "," + str(coor[i]
                                                           [1]) + "," + str(radius[i]) + "|"
         print("points:", points)
+        distance = calculate_distance_for_scale(filename)
         user.user_point = points
+        user.propotion = distance
         db.session.commit()
         return redirect(url_for('show_result'))
     return render_template('select_file.html')

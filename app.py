@@ -232,7 +232,7 @@ def frames(user):
                                     x9, y9 = lm.x, lm.y
                                 if(x0 != 0 and y0 != 0 and x9 != 0 and y9 != 0):
                                     cam_distance = math.sqrt((x0 - x9) ** 2 + (y0 - y9) ** 2)
-                                scale = distance / cam_distance
+                                    scale = distance / cam_distance
                         wrist_y = wrist_y + 15
                         for i in range(0, len(coor)):
                             #print("dis:", coor[i])

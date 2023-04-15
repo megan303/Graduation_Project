@@ -209,14 +209,12 @@ def frames(user):
                     H = frame.shape[0]
                     W = frame.shape[1]
 
-                    
                     x0, y0 = 0.0, 0.0
                     x9, y9 = 0.0, 0.0
                     cam_distance = 0.0
                     distance = user.propotion
                     scale = 0.0
                     tmp_coor = coor
-                    
 
                     wrist_x = 0  # 腕關節
                     wrist_y = 0
@@ -231,13 +229,14 @@ def frames(user):
                                 if i == 0:  # wrist point
                                     wrist_x, wrist_y = xPos, yPos
                                     x0, y0 = lm.x, lm.y
-                                
+
                                 elif i == 9:
                                     x9, y9 = lm.x, lm.y
-                                if(x0 != 0 and y0 != 0 and x9 != 0 and y9 != 0):
-                                    cam_distance = math.sqrt((x0 - x9) ** 2 + (y0 - y9) ** 2)
+                                if (x0 != 0 and y0 != 0 and x9 != 0 and y9 != 0):
+                                    cam_distance = math.sqrt(
+                                        (x0 - x9) ** 2 + (y0 - y9) ** 2)
                                     scale = distance / cam_distance
-                                
+
                         wrist_y = wrist_y + 15
                         tmp_coor = points_position_redo(coor, scale)
                         for i in range(0, len(tmp_coor)):
@@ -281,8 +280,8 @@ def select_file():
             return render_template('select_file.html')
         if not os.path.exists(app.config['UPLOAD_FOLDER']):  # 如果資料夾不存在，就建立資料夾
             os.makedirs(app.config['UPLOAD_FOLDER'])
-        else:
-            return render_template('uploadfail.html')
+        # else:
+            # return render_template('uploadfail.html')
         user = load_user(current_user.id)
         filename = secure_filename(file.filename)
         filename = user.username + '.jpg'
@@ -296,9 +295,10 @@ def select_file():
             points = points + str(coor[i][0]) + "," + str(coor[i]
                                                           [1]) + "," + str(radius[i]) + "|"
         print("points:", points)
-        distance = calculate_distance_for_scale(filename)
+        distance = calculate_distance_for_scale(img)
         user.user_point = points
-        user.propotion = distance
+        user.proportion = distance
+        print("d: ", distance)
         db.session.commit()
         return redirect(url_for('show_result'))
     return render_template('select_file.html')

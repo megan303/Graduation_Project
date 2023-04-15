@@ -115,27 +115,27 @@ def find_coor(img, file_path):
         return (coor, radius)
 
 
-def calculate_distance_for_scale(image_path):
+def calculate_distance_for_scale(img):
     mp_hands = mp.solutions.hands
-    hands = mp_hands.Hands(static_image_mode=True,min_tracking_confidence=0.5)
-    image = cv2.cvtColor(image_path, cv2.COLOR_BGR2RGB)
-    results = hands.process(image)
+    hands = mp_hands.Hands(min_detection_confidence=0.5,
+                           min_tracking_confidence=0.5, max_num_hands=1)
+    results = hands.process(img)
     distance = 0.0
     x0, y0 = 0.0, 0.0
     x9, y9 = 0.0, 0.0
     flag = False
     if results.multi_hand_landmarks:
         for hand_landmarks in results.multi_hand_landmarks:
-            if(flag == True):
-                    break
+            if (flag == True):
+                break
             for ids, landmrk in enumerate(hand_landmarks.landmark):
-                if(flag == True):
+                if (flag == True):
                     break
-                if(ids == 0):
+                if (ids == 0):
                     x0, y0 = landmrk.x, landmrk.y
-                elif(ids == 9):
+                elif (ids == 9):
                     x9, y9 = landmrk.x, landmrk.y
-                if(x0 != 0 and y0 != 0 and x9 != 0 and y9 != 0):
+                if (x0 != 0 and y0 != 0 and x9 != 0 and y9 != 0):
                     flag = True
                     distance = math.sqrt((x0 - x9) ** 2 + (y0 - y9) ** 2)
     return distance
@@ -143,16 +143,24 @@ def calculate_distance_for_scale(image_path):
 
 def points_position_redo(coor, scale):
     calculated = coor
-    distance1 = math.sqrt((calculated[0][0] - calculated[1][0]) ** 2 + (calculated[0][1] - calculated[1][1]) ** 2)
-    distance2 = math.sqrt((calculated[0][0] - calculated[2][0]) ** 2 + (calculated[0][1] - calculated[2][1]) ** 2)
-    m1 = (calculated[0][1] - calculated[1][1]) / (calculated[0][0] - calculated[1][0])
-    m2 = (calculated[0][1] - calculated[2][1]) / (calculated[0][0] - calculated[2][0])
+    distance1 = math.sqrt((calculated[0][0] - calculated[1][0])
+                          ** 2 + (calculated[0][1] - calculated[1][1]) ** 2)
+    distance2 = math.sqrt((calculated[0][0] - calculated[2][0])
+                          ** 2 + (calculated[0][1] - calculated[2][1]) ** 2)
+    m1 = (calculated[0][1] - calculated[1][1]) / \
+        (calculated[0][0] - calculated[1][0])
+    m2 = (calculated[0][1] - calculated[2][1]) / \
+        (calculated[0][0] - calculated[2][0])
     distance1 = distance1 * scale
     distance2 = distance2 * scale
-    calculated[1][0] = calculated[0][0] + distance1 * math.cos(math.atan(m1)) #x0 + l * i0
-    calculated[1][1] = calculated[0][1] + distance1 * math.sin(math.atan(m1)) #y0 + l * j0
-    calculated[2][0] = calculated[0][0] + distance2 * math.cos(math.atan(m2)) #x0 + l * i1
-    calculated[2][1] = calculated[0][1] + distance2 * math.sin(math.atan(m2)) #y0 + l * j1
+    calculated[1][0] = calculated[0][0] + distance1 * \
+        math.cos(math.atan(m1))  # x0 + l * i0
+    calculated[1][1] = calculated[0][1] + distance1 * \
+        math.sin(math.atan(m1))  # y0 + l * j0
+    calculated[2][0] = calculated[0][0] + distance2 * \
+        math.cos(math.atan(m2))  # x0 + l * i1
+    calculated[2][1] = calculated[0][1] + distance2 * \
+        math.sin(math.atan(m2))  # y0 + l * j1
     return calculated
 
 

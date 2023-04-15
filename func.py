@@ -115,9 +115,6 @@ def find_coor(img, file_path):
         return (coor, radius)
 
 
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
 def calculate_distance_for_scale(image_path):
     mp_hands = mp.solutions.hands
     hands = mp_hands.Hands(static_image_mode=True,min_tracking_confidence=0.5)
@@ -142,3 +139,22 @@ def calculate_distance_for_scale(image_path):
                     flag = True
                     distance = math.sqrt((x0 - x9) ** 2 + (y0 - y9) ** 2)
     return distance
+
+
+def points_position_redo(coor, scale):
+    calculated = coor
+    distance1 = math.sqrt((calculated[0][0] - calculated[1][0]) ** 2 + (calculated[0][1] - calculated[1][1]) ** 2)
+    distance2 = math.sqrt((calculated[0][0] - calculated[2][0]) ** 2 + (calculated[0][1] - calculated[2][1]) ** 2)
+    m1 = (calculated[0][1] - calculated[1][1]) / (calculated[0][0] - calculated[1][0])
+    m2 = (calculated[0][1] - calculated[2][1]) / (calculated[0][0] - calculated[2][0])
+    distance1 = distance1 * scale
+    distance2 = distance2 * scale
+    calculated[1][0] = calculated[0][0] + distance1 * math.cos(math.atan(m1)) #x0 + l * i0
+    calculated[1][1] = calculated[0][1] + distance1 * math.sin(math.atan(m1)) #y0 + l * j0
+    calculated[2][0] = calculated[0][0] + distance2 * math.cos(math.atan(m2)) #x0 + l * i1
+    calculated[2][1] = calculated[0][1] + distance2 * math.sin(math.atan(m2)) #y0 + l * j1
+    return calculated
+
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()

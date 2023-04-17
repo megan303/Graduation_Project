@@ -117,12 +117,13 @@ def register():
         hashed_password = bcrypt.generate_password_hash(form.password.data)
         password = hashed_password
         user_point = "NONE"
+        proportion = 0.0
         user_data = UserReister.query.filter_by(username=username).first()
         if user_data:
             flash('此名稱已有使用者註冊，請輸入新的名稱')
             return redirect(url_for('register'))
         else:
-            new_user = UserReister(username, password, user_point)
+            new_user = UserReister(username, password, user_point, proportion)
             db.session.add(new_user)
             db.session.commit()
             flash('註冊成功!!')
@@ -138,7 +139,7 @@ def login():
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
-                # flash("成功登入!!")
+                # flash("成功登入!!")\
                 # return 'Success Thank You'
                 return redirect(url_for('select_func'))
             else:

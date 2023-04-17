@@ -147,10 +147,14 @@ def points_position_redo(coor, scale):
                           ** 2 + (calculated[0][1] - calculated[1][1]) ** 2)
     distance2 = math.sqrt((calculated[0][0] - calculated[2][0])
                           ** 2 + (calculated[0][1] - calculated[2][1]) ** 2)
-    m1 = (calculated[0][1] - calculated[1][1]) / \
-        (calculated[0][0] - calculated[1][0])
-    m2 = (calculated[0][1] - calculated[2][1]) / \
-        (calculated[0][0] - calculated[2][0])
+    dx1 = calculated[0][0] - calculated[1][0]
+    dx2 = calculated[0][0] - calculated[2][0]
+    if dx1 == 0:
+        dx1 = 1000
+    if dx2 == 0:
+        dx2 = 1000
+    m1 = (calculated[0][1] - calculated[1][1]) / dx1
+    m2 = (calculated[0][1] - calculated[2][1]) / dx2
     distance1 = distance1 * scale
     distance2 = distance2 * scale
     calculated[1][0] = calculated[0][0] + distance1 * \

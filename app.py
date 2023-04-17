@@ -178,7 +178,7 @@ def frames(user):
             radius.append(number_list[i + 2])
         #print("det in")
     if camera_mode == True:
-        camera = cv2.VideoCapture(1)
+        camera = cv2.VideoCapture(0)
         while True:
             success, frame = camera.read()
             #frame = cv2.flip(frame, 1)
@@ -213,7 +213,7 @@ def frames(user):
                     x0, y0 = 0.0, 0.0
                     x9, y9 = 0.0, 0.0
                     cam_distance = 0.0
-                    distance = user.propotion
+                    distance = user.proportion * 1000
                     scale = 0.0
                     tmp_coor = coor
 
@@ -235,18 +235,22 @@ def frames(user):
                                     x9, y9 = lm.x, lm.y
                                 if (x0 != 0 and y0 != 0 and x9 != 0 and y9 != 0):
                                     cam_distance = math.sqrt(
-                                        (x0 - x9) ** 2 + (y0 - y9) ** 2)
-                                    scale = distance / cam_distance
+                                        (x0 - x9) ** 2 + (y0 - y9) ** 2) * 1000
+                                    scale = cam_distance / distance
 
                         wrist_y = wrist_y + 15
                         tmp_coor = points_position_redo(coor, scale)
                         for i in range(0, len(tmp_coor)):
                             #print("dis:", coor[i])
                             #print("radius:", radius[i])
+                            r1 = radius[i] * scale
+                            r1 = np.round(r1).astype("int")
+                            r2 = 2 * scale
+                            r2 = np.round(r2).astype("int")
                             frame = cv2.circle(
-                                frame, (wrist_x - tmp_coor[i][0], wrist_y + tmp_coor[i][1]), radius[i] * scale, color_red, 1)
+                                frame, (int(wrist_x - tmp_coor[i][0]), int(wrist_y + tmp_coor[i][1])), r1, color_red, 1)
                             frame = cv2.circle(
-                                frame, (wrist_x - tmp_coor[i][0], wrist_y + tmp_coor[i][1]), 2 * scale, color_blue, 1)
+                                frame, (int(wrist_x - tmp_coor[i][0]), int(wrist_y + tmp_coor[i][1])), r2, color_blue, 1)
                 try:
                     ret, buffer = cv2.imencode('.jpg', frame)
                     frame = buffer.tobytes()

@@ -112,10 +112,10 @@ def find_coor(img, file_path):
             radius.append(r)
             print("radius:", radius, "coor:", coor)
         cv2.imwrite(file_path, img)
-        return (coor, radius)
+        return (coor, radius, H, W)
 
 
-def calculate_distance_for_scale(img):
+def calculate_distance_for_scale(img, H, W):
     mp_hands = mp.solutions.hands
     hands = mp_hands.Hands(min_detection_confidence=0.5,
                            min_tracking_confidence=0.5, max_num_hands=1)
@@ -132,9 +132,9 @@ def calculate_distance_for_scale(img):
                 if (flag == True):
                     break
                 if (ids == 0):
-                    x0, y0 = landmrk.x, landmrk.y
+                    x0, y0 = landmrk.x * W, landmrk.y * H
                 elif (ids == 9):
-                    x9, y9 = landmrk.x, landmrk.y
+                    x9, y9 = landmrk.x * W, landmrk.y * H
                 if (x0 != 0 and y0 != 0 and x9 != 0 and y9 != 0):
                     flag = True
                     distance = math.sqrt((x0 - x9) ** 2 + (y0 - y9) ** 2)
@@ -142,7 +142,9 @@ def calculate_distance_for_scale(img):
 
 
 def points_position_redo(coor, scale):
-    calculated = coor
+    calculated = []
+    for i in range(0, len(coor)):
+            calculated.append([coor[i][0], coor[i][1]])
     distance1 = math.sqrt((calculated[0][0] - calculated[1][0])
                           ** 2 + (calculated[0][1] - calculated[1][1]) ** 2)
     distance2 = math.sqrt((calculated[0][0] - calculated[2][0])

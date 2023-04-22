@@ -63,12 +63,16 @@ class UserReister(db.Model, UserMixin):  # 記錄使用者資料的資料表
     password = db.Column(db.String(80), nullable=False)
     user_point = db.Column(db.String(100), nullable=False)
     proportion = db.Column(db.Float(), nullable=True)
+    height = db.Column(db.Integer(), nullable=True)
+    width = db.Column(db.Integer(), nullable=True)
 
-    def __init__(self, username, password, user_point, proportion):
+    def __init__(self, username, password, user_point, proportion, height, width):
         self.username = username
         self.password = password
         self.user_point = user_point
         self.proportion = proportion
+        self.height = height
+        self.width = width
 
 
 class RegisterForm(FlaskForm):
@@ -118,12 +122,14 @@ def register():
         password = hashed_password
         user_point = "NONE"
         proportion = 0.0
+        height = 0
+        width = 0
         user_data = UserReister.query.filter_by(username=username).first()
         if user_data:
             flash('此名稱已有使用者註冊，請輸入新的名稱')
             return redirect(url_for('register'))
         else:
-            new_user = UserReister(username, password, user_point, proportion)
+            new_user = UserReister(username, password, user_point, proportion, height, width)
             db.session.add(new_user)
             db.session.commit()
             flash('註冊成功!!')
@@ -178,7 +184,7 @@ def frames(user):
             radius.append(number_list[i + 2])
         #print("det in")
     if camera_mode == True:
-        camera = cv2.VideoCapture(0)
+        camera = cv2.VideoCapture(1)
         while True:
             success, frame = camera.read()
             #frame = cv2.flip(frame, 1)
@@ -209,13 +215,17 @@ def frames(user):
                     #print("det in2")
                     H = frame.shape[0]
                     W = frame.shape[1]
+                    h = user.height
+                    w = user.width
 
                     x0, y0 = 0.0, 0.0
                     x9, y9 = 0.0, 0.0
                     cam_distance = 0.0
-                    distance = user.proportion * 1000
+                    distance = user.proportion
                     scale = 0.0
-                    tmp_coor = coor
+                    tmp_coor = []
+                    for i in range(0, len(coor)):
+                        tmp_coor.append([coor[i][0], coor[i][1]])
 
                     wrist_x = 0  # 腕關節
                     wrist_y = 0
@@ -229,16 +239,15 @@ def frames(user):
                                 yPos = round(lm.y * H)
                                 if i == 0:  # wrist point
                                     wrist_x, wrist_y = xPos, yPos
-                                    x0, y0 = lm.x, lm.y
+                                    x0, y0 = xPos, yPos
 
                                 elif i == 9:
-                                    x9, y9 = lm.x, lm.y
+                                    x9, y9 = xPos, yPos
                                 if (x0 != 0 and y0 != 0 and x9 != 0 and y9 != 0):
-                                    cam_distance = math.sqrt(
-                                        (x0 - x9) ** 2 + (y0 - y9) ** 2) * 1000
-                                    scale = cam_distance / distance
+                                    cam_distance = math.sqrt((x0 - x9) ** 2 + (y0 - y9) ** 2)
+                                    scale = (cam_distance / distance) / 1.3 #((H * W) / (h * w))
 
-                        wrist_y = wrist_y + 15
+                        wrist_y = wrist_y + 15 * scale
                         tmp_coor = points_position_redo(coor, scale)
                         for i in range(0, len(tmp_coor)):
                             #print("dis:", coor[i])
@@ -294,13 +303,15 @@ def select_file():
         filee = request.files['img'].read()
         npimg = np.frombuffer(filee, np.uint8)
         img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
-        coor, radius = find_coor(img, file_path)
+        coor, radius, H, W = find_coor(img, file_path)
         points = ""
         for i in range(0, len(coor)):
             points = points + str(coor[i][0]) + "," + str(coor[i]
                                                           [1]) + "," + str(radius[i]) + "|"
         print("points:", points)
-        distance = calculate_distance_for_scale(img)
+        distance = calculate_distance_for_scale(img, H, W)
+        user.height = H
+        user.width = W
         user.user_point = points
         user.proportion = distance
         print("d: ", distance)

@@ -184,7 +184,7 @@ def frames(user):
             radius.append(number_list[i + 2])
         #print("det in")
     if camera_mode == True:
-        camera = cv2.VideoCapture(1)
+        camera = cv2.VideoCapture(1, cv2.CAP_DSHOW)
         while True:
             success, frame = camera.read()
             #frame = cv2.flip(frame, 1)
@@ -294,8 +294,8 @@ def select_file():
             return render_template('select_file.html')
         if not os.path.exists(app.config['UPLOAD_FOLDER']):  # 如果資料夾不存在，就建立資料夾
             os.makedirs(app.config['UPLOAD_FOLDER'])
-        # else:
-            # return render_template('uploadfail.html')
+        #else:
+        #    return render_template('uploadfail.html')
         user = load_user(current_user.id)
         filename = secure_filename(file.filename)
         filename = user.username + '.jpg'

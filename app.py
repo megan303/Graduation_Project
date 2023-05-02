@@ -129,7 +129,8 @@ def register():
             flash('此名稱已有使用者註冊，請輸入新的名稱')
             return redirect(url_for('register'))
         else:
-            new_user = UserReister(username, password, user_point, proportion, height, width)
+            new_user = UserReister(
+                username, password, user_point, proportion, height, width)
             db.session.add(new_user)
             db.session.commit()
             flash('註冊成功!!')
@@ -244,8 +245,10 @@ def frames(user):
                                 elif i == 9:
                                     x9, y9 = xPos, yPos
                                 if (x0 != 0 and y0 != 0 and x9 != 0 and y9 != 0):
-                                    cam_distance = math.sqrt((x0 - x9) ** 2 + (y0 - y9) ** 2)
-                                    scale = (cam_distance / distance) / 1.3 #((H * W) / (h * w))
+                                    cam_distance = math.sqrt(
+                                        (x0 - x9) ** 2 + (y0 - y9) ** 2)
+                                    scale = (cam_distance / distance) / \
+                                        1.3  # ((H * W) / (h * w))
 
                         wrist_y = wrist_y + 15 * scale
                         tmp_coor = points_position_redo(coor, scale)
@@ -294,7 +297,7 @@ def select_file():
             return render_template('select_file.html')
         if not os.path.exists(app.config['UPLOAD_FOLDER']):  # 如果資料夾不存在，就建立資料夾
             os.makedirs(app.config['UPLOAD_FOLDER'])
-        #else:
+        # else:
         #    return render_template('uploadfail.html')
         user = load_user(current_user.id)
         filename = secure_filename(file.filename)

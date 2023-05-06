@@ -31,7 +31,7 @@ if result.multi_hand_landmarks:
         mp_drawing.draw_landmarks(
                     img,
                     handLms,
-                    hands.HAND_CONNECTIONS,
+                    mpHands.HAND_CONNECTIONS,
                     mp_drawing_styles.get_default_hand_landmarks_style(),
                     mp_drawing_styles.get_default_hand_connections_style())
         for i, lm in enumerate(handLms.landmark):

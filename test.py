@@ -47,9 +47,9 @@ if result.multi_hand_landmarks:
         r = int(circle[2])  # 半徑
         rel_x = abs(x - wrist_x)
         rel_y = abs(y - wrist_y)
-        img = cv2.circle(img, (x, y), r, color_red, 1)
-        img = cv2.circle(img, (x, y), 2, color_blue, 1)
-    #cv2.imwrite("for_rep", img)
+        #img = cv2.circle(img, (x, y), r, color_red, 1)
+        #img = cv2.circle(img, (x, y), 2, color_blue, 1)
+    cv2.imwrite("for_rep.jpg", img)
     cv2.imshow("new", img)
 
 cv2.waitKey(0)

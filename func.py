@@ -12,7 +12,6 @@ color_blue = (255, 0, 0)
 low_bound = 30
 upper_bound = 200
 
-#img = cv2.imread('static\\uploads\\capture0.jpg')
 pjdir = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_FOLDER = os.path.join(pjdir,  'static', 'uploads')
 
@@ -22,7 +21,6 @@ def cut_img(img):
     mpHands = mp.solutions.hands
     hands = mpHands.Hands(min_detection_confidence=0.5,
                           min_tracking_confidence=0.5, max_num_hands=1)
-    #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     result = hands.process(img)
     print("in")
     if result.multi_hand_landmarks:
@@ -84,7 +82,6 @@ def find_coor(img, file_path):
 
     coor = []
     radius = []
-    #print("radius:", radius, "coor:", coor)
     if result.multi_hand_landmarks:
         print("in")
         H = img.shape[0]

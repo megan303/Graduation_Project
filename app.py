@@ -26,7 +26,6 @@ UPLOAD_FOLDER = os.path.join(pjdir,  'static', 'uploads')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + \
     os.path.join(pjdir, 'database.sqlite')  # 設置sqlite檔案路徑
-#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SECRET_KEY'] = 'secretkey'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 db = SQLAlchemy(app)
@@ -146,8 +145,6 @@ def login():
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
-                # flash("成功登入!!")\
-                # return 'Success Thank You'
                 return redirect(url_for('select_func'))
             else:
                 flash("使用者名稱或密碼錯誤")
@@ -183,37 +180,18 @@ def frames(user):
         for i in range(0, len(number_list), 3):
             coor.append([number_list[i], number_list[i + 1]])
             radius.append(number_list[i + 2])
-        #print("det in")
     if camera_mode == True:
         camera = cv2.VideoCapture(1, cv2.CAP_DSHOW)
         while True:
             success, frame = camera.read()
-            #frame = cv2.flip(frame, 1)
             if success:
                 if (capture):
                     capture = 0
-                    '''
-                    if not os.path.exists(app.config['UPLOAD_FOLDER']):  # 如果資料夾不存在，就建立資料夾
-                        os.makedirs(app.config['UPLOAD_FOLDER'])
-                    filename = user.username + '.jpg'
-                    file_path = os.path.join(UPLOAD_FOLDER, filename)
-                    #filee = request.files['img'].read()
-                    #npimg = np.frombuffer(frame, np.uint8)
-                    #img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
-                    coor, radius = find_coor(frame, file_path)
-                    points = ""
-                    for i in range(0, len(coor)):
-                        points = str(coor[i][0]) + "," + str(coor[i]
-                                                 [1]) + "," + str(radius[i]) + "|"
-                    user.user_point = points
-                    db.session.commit()
-                    '''
                     filename = user.username + '.jpg'
                     file_path = os.path.join(UPLOAD_FOLDER, filename)
                     cv2.imwrite(file_path, frame)
                     camera.release()
                 if (det):
-                    #print("det in2")
                     H = frame.shape[0]
                     W = frame.shape[1]
                     h = user.height
@@ -253,8 +231,6 @@ def frames(user):
                         wrist_y = wrist_y + 15 * scale
                         tmp_coor = points_position_redo(coor, scale)
                         for i in range(0, len(tmp_coor)):
-                            #print("dis:", coor[i])
-                            #print("radius:", radius[i])
                             r1 = radius[i] * scale
                             r1 = np.round(r1).astype("int")
                             r2 = 2 * scale
@@ -297,8 +273,6 @@ def select_file():
             return render_template('select_file.html')
         if not os.path.exists(app.config['UPLOAD_FOLDER']):  # 如果資料夾不存在，就建立資料夾
             os.makedirs(app.config['UPLOAD_FOLDER'])
-        # else:
-        #    return render_template('uploadfail.html')
         user = load_user(current_user.id)
         filename = secure_filename(file.filename)
         filename = user.username + '.jpg'
@@ -371,5 +345,3 @@ def detect():
 if __name__ == '__main__':
     app.run(host="localhost", port=3000)
     app.debug = True
-    #server = pywsgi.WSGIServer(("localhost", 3000), app)
-    # server.serve_forever()
